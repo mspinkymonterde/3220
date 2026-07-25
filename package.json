@@ -1,0 +1,28 @@
+{
+  "name": "state-3220-discord-bot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "register:commands": "tsx src/register-commands.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.11.1",
+    "discord.js": "^14.21.0",
+    "dotenv": "^16.6.1",
+    "pino": "^9.7.0",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@types/node": "^22.17.0",
+    "prisma": "^6.11.1",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  }
+}

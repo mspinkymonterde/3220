@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Alliance {
+  HEL
+  HLS
+  ZRO
+  MIT
+  Visitor
+}
+
+enum VerificationStatus {
+  Draft
+  Pending
+  AutoApproved
+  Approved
+  Denied
+  DuplicateRejected
+}
+
+model Member {
+  id              String   @id @default(cuid())
+  discordId       String   @unique
+  username        String
+  nickname        String?
+  ign             String
+  playerId        String   @unique
+  alliance        Alliance
+  stateNumber     Int
+  verified        Boolean  @default(false)
+  notes           String?
+  joinedDiscordAt DateTime?
+  verifiedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  verificationRequests VerificationRequest[]
+}
+
+model VerificationRequest {
+  id                  String             @id @default(cuid())
+  memberId            String?
+  member              Member?            @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  status              VerificationStatus
+  submittedByDiscordId String
+  submittedAt         DateTime           @default(now())
+  reviewedByDiscordId  String?
+  reviewedAt          DateTime?
+  denialReason        String?
+  reviewMessageId     String?
+  payloadSnapshot     Json
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  action        String
+  discordUserId String
+  targetDiscordId String?
+  details       Json
+  createdAt     DateTime @default(now())
+}
+
+model BotSetting {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
