@@ -61,7 +61,7 @@ export const birthdaysCommand: BotCommand = {
 
     // Format the lines
     const descriptionLines = topUpcoming.map((u) => {
-      const formattedDate = `${String(u.day).padStart(2, '0')} ${months[u.month - 1]} ${u.year}`;
+      const formattedDate = `${String(u.day).padStart(2, '0')} ${months[u.month - 1]}`;
       return `\`${formattedDate}\` • <@${u.member.discordId}>`;
     });
 
