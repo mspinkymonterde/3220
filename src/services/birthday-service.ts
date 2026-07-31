@@ -72,8 +72,15 @@ export async function processBirthdays(client: Client) {
     }
 
     try {
-      const prompt = `Write a sweet and personal birthday greeting for a gamer named ${member.ign}. They are a member of the ${member.alliance} alliance in state ${member.stateNumber || 3220} in the game Whiteout Survival. Keep it short (2-4 sentences). Wish them well in their real life, include a brief, nice reference to playing Whiteout Survival together, and say something like "hope we get to play many more years with you." Use 1 to 3 emojis maximum. Do not be overly dramatic. Don't mention Discord tags.`;
-      const result = await model.generateContent(prompt);
+      const prompt = `Write a unique, sweet, and highly creative birthday greeting for a gamer named ${member.ign} in State 3220 of Whiteout Survival. 
+IMPORTANT: Make every message completely different and unpredictable! Do not follow a formula. 
+Vary your wording, tone, and themes. Keep it natural, sweet, and personal (2-4 short sentences). Wish them a happy birthday in real life, and add a nice note about playing together for a long time. 
+Use 1 to 3 emojis maximum. Do NOT mention any alliances. Do NOT mention Discord tags.`;
+      
+      const result = await model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.9 }, // Higher temperature for more variety
+      });
       const aiGreeting = result.response.text().trim();
 
       const messageContent = `🎉 Happy Birthday ${mention}! 🎂\n\n> ${aiGreeting.replace(/\n/g, '\n> ')}`;
