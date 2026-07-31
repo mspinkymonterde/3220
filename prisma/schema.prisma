@@ -37,6 +37,7 @@ model Member {
   notes           String?
   joinedDiscordAt DateTime?
   verifiedAt      DateTime?
+  birthday        String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

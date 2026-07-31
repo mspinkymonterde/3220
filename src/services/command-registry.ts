@@ -6,6 +6,8 @@ import { lookupIdCommand } from '../commands/lookup-id.js';
 import { lookupIgnCommand } from '../commands/lookup-ign.js';
 import { profileCommand } from '../commands/profile.js';
 import { setupPanelCommand } from '../commands/setup-panel.js';
+import { importBirthdaysCommand } from '../commands/import-birthdays.js';
+import { setBirthdayCommand } from '../commands/set-birthday.js';
 
 export interface BotCommand {
   data: {
@@ -23,6 +25,8 @@ export const commands: BotCommand[] = [
   lookupIdCommand,
   lookupIgnCommand,
   editProfileCommand,
+  importBirthdaysCommand,
+  setBirthdayCommand,
 ];
 
 export const commandMap = new Map(commands.map((command) => [command.data.name, command] as const));

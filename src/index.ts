@@ -17,7 +17,12 @@ const client = new Client({
   partials: [Partials.GuildMember],
 });
 
-client.on('ready', async () => handleReady(client));
+import { initBirthdayService } from './services/birthday-service.js';
+
+client.on('ready', async () => {
+  await handleReady(client);
+  await initBirthdayService(client);
+});
 client.on('interactionCreate', handleInteractionCreate);
 
 async function main() {

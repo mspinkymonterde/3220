@@ -27,6 +27,8 @@ const envSchema = z.object({
   MEMBER_LOG_CHANNEL_ID: z.string().min(1),
   BOT_LOG_CHANNEL_ID: z.string().min(1),
   LOG_LEVEL: z.string().default('info'),
+  GEMINI_API_KEY: z.string().min(1),
+  BIRTHDAY_CHANNEL_ID: z.string().min(1),
 });
 
 const parsedEnv = envSchema.parse(process.env);
@@ -53,4 +55,6 @@ export const config = {
   botLogChannelId: parsedEnv.BOT_LOG_CHANNEL_ID,
   logLevel: parsedEnv.LOG_LEVEL,
   allowedAlliances: alliances,
+  geminiApiKey: parsedEnv.GEMINI_API_KEY,
+  birthdayChannelId: parsedEnv.BIRTHDAY_CHANNEL_ID,
 } as const;
