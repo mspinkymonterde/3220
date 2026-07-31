@@ -73,7 +73,37 @@ export const importBirthdaysCommand: BotCommand = {
               });
               updatedCount++;
             } else {
-              notFoundIdentifiers.push(identifier);
+              // Try to find the user in Discord to create a dummy profile
+              let discordUser = null;
+              try {
+                if (identifier.match(/^\d{17,20}$/)) {
+                  discordUser = await interaction.client.users.fetch(identifier);
+                } else if (interaction.guild) {
+                  const guildMembers = await interaction.guild.members.fetch({ query: identifier, limit: 1 });
+                  discordUser = guildMembers.first()?.user;
+                }
+              } catch (e) {
+                // Ignore fetch errors
+              }
+
+              if (discordUser) {
+                // Create a placeholder profile
+                await prisma.member.create({
+                  data: {
+                    discordId: discordUser.id,
+                    username: discordUser.username,
+                    ign: identifier,
+                    playerId: `dummy-${discordUser.id}`,
+                    alliance: 'Visitor',
+                    stateNumber: 0,
+                    verified: false,
+                    birthday: birthday,
+                  }
+                });
+                updatedCount++;
+              } else {
+                notFoundIdentifiers.push(identifier);
+              }
             }
           }
         }

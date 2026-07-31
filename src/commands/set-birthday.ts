@@ -67,16 +67,36 @@ export const setBirthdayCommand: BotCommand = {
         discordIdToUpdate = targetUser.id;
     }
 
-    const member = await prisma.member.findUnique({ where: { discordId: discordIdToUpdate } });
+    let member = await prisma.member.findUnique({ where: { discordId: discordIdToUpdate } });
 
     if (!member) {
-      throw new UserFacingError(`No profile is stored for <@${discordIdToUpdate}> yet.`);
-    }
+      let discordUser = null;
+      try {
+        discordUser = await interaction.client.users.fetch(discordIdToUpdate);
+      } catch (e) {}
 
-    await prisma.member.update({
+      if (discordUser) {
+        member = await prisma.member.create({
+          data: {
+            discordId: discordUser.id,
+            username: discordUser.username,
+            ign: discordUser.username,
+            playerId: `dummy-${discordUser.id}`,
+            alliance: 'Visitor',
+            stateNumber: 0,
+            verified: false,
+            birthday: birthdayStr,
+          }
+        });
+      } else {
+        throw new UserFacingError(`No profile is stored for <@${discordIdToUpdate}> and their Discord account could not be found.`);
+      }
+    } else {
+      await prisma.member.update({
         where: { discordId: discordIdToUpdate },
         data: { birthday: birthdayStr },
-    });
+      });
+    }
 
     await interaction.reply({
       content: `Successfully set birthday for <@${discordIdToUpdate}> to **${birthdayStr}**!`,
