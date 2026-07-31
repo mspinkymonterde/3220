@@ -72,14 +72,14 @@ export async function processBirthdays(client: Client) {
     }
 
     try {
-      const prompt = `Write a short, fun, and unique birthday greeting for a gamer named ${member.ign} (who is in the ${member.alliance} alliance in state ${member.stateNumber}). Keep it under 2 sentences and use emojis. Don't mention discord tags.`;
+      const prompt = `Write a personalized, fun, and enthusiastic birthday greeting for a gamer named ${member.ign}. They are a member of the ${member.alliance} alliance in state ${member.stateNumber} in the game Whiteout Survival. Make it about a paragraph long (3-5 sentences), highlight their gaming achievements, use plenty of emojis, and make it feel very special! Don't mention Discord tags.`;
       const result = await model.generateContent(prompt);
       const aiGreeting = result.response.text().trim();
 
-      const messageContent = `🎉 Happy Birthday ${mention}! 🎂\n> ${aiGreeting}`;
+      const messageContent = `🎉 Happy Birthday ${mention}! 🎂\n\n> ${aiGreeting.replace(/\n/g, '\n> ')}`;
       await channel.send({ content: messageContent });
     } catch (error) {
-      logger.error({ error, memberId: member.id }, 'Failed to generate or send birthday message for member.');
+      logger.error({ error, memberId: member.id }, 'CRITICAL: Gemini AI failed to generate the birthday message. Using fallback.');
       // Fallback message if AI fails
       await channel.send({ content: `🎉 Happy Birthday ${mention}! 🎂 Hope you have an awesome day!` });
     }
