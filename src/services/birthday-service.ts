@@ -72,7 +72,7 @@ export async function processBirthdays(client: Client) {
     }
 
     try {
-      const prompt = `Write a personalized, fun, and enthusiastic birthday greeting for a gamer named ${member.ign}. They are a member of the ${member.alliance} alliance in state ${member.stateNumber} in the game Whiteout Survival. Make it about a paragraph long (3-5 sentences), highlight their gaming achievements, use plenty of emojis, and make it feel very special! Don't mention Discord tags.`;
+      const prompt = `Write a sweet and personal birthday greeting for a gamer named ${member.ign}. They are a member of the ${member.alliance} alliance in state ${member.stateNumber || 3220} in the game Whiteout Survival. Keep it short (2-4 sentences). Wish them well in their real life, include a brief, nice reference to playing Whiteout Survival together, and say something like "hope we get to play many more years with you." Use 1 to 3 emojis maximum. Do not be overly dramatic. Don't mention Discord tags.`;
       const result = await model.generateContent(prompt);
       const aiGreeting = result.response.text().trim();
 

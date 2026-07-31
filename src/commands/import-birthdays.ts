@@ -72,21 +72,36 @@ export const importBirthdaysCommand: BotCommand = {
                 data: { birthday },
               });
               updatedCount++;
-            } else {
-              // Try to find the user in Discord to create a dummy profile
               let discordUser = null;
+              let discordMember = null;
               try {
                 if (identifier.match(/^\d{17,20}$/)) {
                   discordUser = await interaction.client.users.fetch(identifier);
+                  if (interaction.guild) {
+                    discordMember = await interaction.guild.members.fetch(identifier).catch(() => null);
+                  }
                 } else if (interaction.guild) {
                   const guildMembers = await interaction.guild.members.fetch({ query: identifier, limit: 1 });
-                  discordUser = guildMembers.first()?.user;
+                  discordMember = guildMembers.first();
+                  discordUser = discordMember?.user;
                 }
               } catch (e) {
                 // Ignore fetch errors
               }
 
               if (discordUser) {
+                let userAlliance = 'Visitor';
+                if (discordMember) {
+                  for (const [key, roleId] of Object.entries(config.allianceRoleIds)) {
+                    if (roleId && discordMember.roles.cache.has(roleId)) {
+                      if (key !== 'Visitor') {
+                        userAlliance = key;
+                        break;
+                      }
+                    }
+                  }
+                }
+
                 // Create a placeholder profile
                 await prisma.member.create({
                   data: {
@@ -94,8 +109,8 @@ export const importBirthdaysCommand: BotCommand = {
                     username: discordUser.username,
                     ign: identifier,
                     playerId: `dummy-${discordUser.id}`,
-                    alliance: 'Visitor',
-                    stateNumber: 0,
+                    alliance: userAlliance as any,
+                    stateNumber: 3220,
                     verified: false,
                     birthday: birthday,
                   }

@@ -71,19 +71,35 @@ export const setBirthdayCommand: BotCommand = {
 
     if (!member) {
       let discordUser = null;
+      let discordMember = null;
       try {
         discordUser = await interaction.client.users.fetch(discordIdToUpdate);
+        if (interaction.guild) {
+          discordMember = await interaction.guild.members.fetch(discordIdToUpdate).catch(() => null);
+        }
       } catch (e) {}
 
       if (discordUser) {
+        let userAlliance = 'Visitor';
+        if (discordMember) {
+          for (const [key, roleId] of Object.entries(config.allianceRoleIds)) {
+            if (roleId && discordMember.roles.cache.has(roleId)) {
+              if (key !== 'Visitor') {
+                userAlliance = key;
+                break;
+              }
+            }
+          }
+        }
+
         member = await prisma.member.create({
           data: {
             discordId: discordUser.id,
             username: discordUser.username,
             ign: discordUser.username,
             playerId: `dummy-${discordUser.id}`,
-            alliance: 'Visitor',
-            stateNumber: 0,
+            alliance: userAlliance as any,
+            stateNumber: 3220,
             verified: false,
             birthday: birthdayStr,
           }
