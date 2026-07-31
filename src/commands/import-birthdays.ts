@@ -11,7 +11,7 @@ export const importBirthdaysCommand: BotCommand = {
     .addAttachmentOption((option) =>
       option
         .setName('csv')
-        .setDescription('CSV file with format: username,MM-DD')
+        .setDescription('CSV file with format: username_or_id,MM-DD')
         .setRequired(true)
     ),
   async execute(interaction: ChatInputCommandInteraction) {
@@ -47,20 +47,22 @@ export const importBirthdaysCommand: BotCommand = {
       
       const lines = csvText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
       let updatedCount = 0;
-      const notFoundUsernames: string[] = [];
+      const notFoundIdentifiers: string[] = [];
 
       for (const line of lines) {
         const parts = line.split(',');
         if (parts.length >= 2) {
-          const username = parts[0]?.trim();
+          const identifier = parts[0]?.trim();
           const birthday = parts[1]?.trim();
 
-          if (username && birthday && birthday.match(/^\d{2}-\d{2}$/)) {
-            // Find member by username (ignoring case usually better handled by searching or precise match)
-            // But Discord usernames in DB are exact. We'll do exact first.
+          if (identifier && birthday && birthday.match(/^\d{2}-\d{2}$/)) {
+            // Find member by discordId or username
             const member = await prisma.member.findFirst({
               where: {
-                 username: { equals: username, mode: 'insensitive' }
+                OR: [
+                  { discordId: identifier },
+                  { username: { equals: identifier, mode: 'insensitive' } }
+                ]
               }
             });
 
@@ -71,15 +73,15 @@ export const importBirthdaysCommand: BotCommand = {
               });
               updatedCount++;
             } else {
-              notFoundUsernames.push(username);
+              notFoundIdentifiers.push(identifier);
             }
           }
         }
       }
 
       let replyContent = `Successfully updated birthdays for **${updatedCount}** members.`;
-      if (notFoundUsernames.length > 0) {
-        replyContent += `\nCould not find profiles for ${notFoundUsernames.length} usernames: ${notFoundUsernames.slice(0, 10).join(', ')}${notFoundUsernames.length > 10 ? '...' : ''}`;
+      if (notFoundIdentifiers.length > 0) {
+        replyContent += `\nCould not find profiles for ${notFoundIdentifiers.length} users: ${notFoundIdentifiers.slice(0, 10).join(', ')}${notFoundIdentifiers.length > 10 ? '...' : ''}`;
       }
 
       await interaction.editReply({ content: replyContent });

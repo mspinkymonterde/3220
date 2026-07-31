@@ -53,18 +53,35 @@ async function processBirthdays(client: Client) {
   const genAI = new GoogleGenerativeAI(config.geminiApiKey);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+  let guild;
+  try {
+    guild = await client.guilds.fetch(config.guildId);
+  } catch (error) {
+    logger.error('Failed to fetch guild for birthday service');
+  }
+
   for (const member of membersWithBirthday) {
+    let mention = `<@${member.discordId}>`;
+    if (guild) {
+      try {
+        await guild.members.fetch(member.discordId);
+      } catch (error) {
+        // Member is not in the server, fallback to text mention
+        mention = `@${member.username}`;
+      }
+    }
+
     try {
       const prompt = `Write a short, fun, and unique birthday greeting for a gamer named ${member.ign} (who is in the ${member.alliance} alliance in state ${member.stateNumber}). Keep it under 2 sentences and use emojis. Don't mention discord tags.`;
       const result = await model.generateContent(prompt);
       const aiGreeting = result.response.text().trim();
 
-      const messageContent = `🎉 Happy Birthday <@${member.discordId}>! 🎂\n> ${aiGreeting}`;
+      const messageContent = `🎉 Happy Birthday ${mention}! 🎂\n> ${aiGreeting}`;
       await channel.send({ content: messageContent });
     } catch (error) {
       logger.error({ error, memberId: member.id }, 'Failed to generate or send birthday message for member.');
       // Fallback message if AI fails
-      await channel.send({ content: `🎉 Happy Birthday <@${member.discordId}>! 🎂 Hope you have an awesome day!` });
+      await channel.send({ content: `🎉 Happy Birthday ${mention}! 🎂 Hope you have an awesome day!` });
     }
   }
 }
