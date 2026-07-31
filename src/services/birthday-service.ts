@@ -51,7 +51,7 @@ export async function processBirthdays(client: Client) {
   }
 
   const genAI = new GoogleGenerativeAI(config.geminiApiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
   let guild;
   try {
