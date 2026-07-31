@@ -8,6 +8,7 @@ import { profileCommand } from '../commands/profile.js';
 import { setupPanelCommand } from '../commands/setup-panel.js';
 import { importBirthdaysCommand } from '../commands/import-birthdays.js';
 import { setBirthdayCommand } from '../commands/set-birthday.js';
+import { testBirthdaysCommand } from '../commands/test-birthdays.js';
 
 export interface BotCommand {
   data: {
@@ -27,6 +28,7 @@ export const commands: BotCommand[] = [
   editProfileCommand,
   importBirthdaysCommand,
   setBirthdayCommand,
+  testBirthdaysCommand,
 ];
 
 export const commandMap = new Map(commands.map((command) => [command.data.name, command] as const));

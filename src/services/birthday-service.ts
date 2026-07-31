@@ -30,7 +30,7 @@ export async function initBirthdayService(client: Client) {
   logger.info('Birthday service initialized and cron job scheduled.');
 }
 
-async function processBirthdays(client: Client) {
+export async function processBirthdays(client: Client) {
   const today = new Date();
   const month = String(today.getUTCMonth() + 1).padStart(2, '0');
   const day = String(today.getUTCDate()).padStart(2, '0');
